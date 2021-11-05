@@ -1,2 +1,5 @@
-# eml_content_analyses
-R code examples for analyzing and manipulating EML metadata content 
+# Metadata Content Analysis
+
+R code examples for analyzing and manipulating a body of metadata encoded in the Ecological Metadata Language (EML)
+
+

@@ -1,0 +1,26 @@
+--- 
+title: "Analyze Metadata Content"
+author: "Corinna Gries"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [packages.bib]
+biblio-style: apalike
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  R code examples for analyzing a body of metadata encode in the Ecological
+  Metadata Language (EML).
+link-citations: yes
+github-repo: cgries/metadata_analysis
+---
+
+# Analyze EML Content
+
+This repository is a collection of code examples to analyzes metadata content in EML files. EML files may be analyzed separately to evaluate FAIR or for a whole group of EML files (e.g., all metadata at a research site or project). 
+
+Other examples included will display the distribution of years of observation, i.e., length of datasets. 
+
+It is also possible to analyze subject categories of datasets and their download frequency.
+

@@ -1,0 +1,19 @@
+bookdown::gitbook:
+  css: style.css
+  config:
+    toc:
+      before: |
+        <a href="https://environmentaldatainitiative.org/" target = "blank">
+          <img src="./images/edi-logo-svg.png" alt="EDI logo" style="float:center;width:50px;height:50px;">
+        </a>
+      after: |
+        
+    edit: https://github.com/cgries/metadata_analysis/edit/main/%s
+    download: ["pdf", "epub"]
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes
+bookdown::epub_book: default
