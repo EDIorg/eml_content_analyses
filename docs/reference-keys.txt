@@ -3,6 +3,7 @@ EML_FAIR
 introduction
 download-eml-files
 analyze-eml-content-1
+dataset-has-id-and-id-is-resolvable
 title-length
 abstract-length
 number-of-keywords-keyword-types-keyword-thesaurus
@@ -10,11 +11,13 @@ pub-date
 coverages-present
 access-is-public
 contact-and-contact-id-present
+publisher-and-publisher-id-present
+landing-page-link-present
 quality-description-present
-methods-description-length
+methods-description-present-and-length
 license-present
 provenance-data-source-present
-processing-code-presentdescribed
+processing-code-present-and-described
 entity-information
 table-entity-specific-information
 attribute-information
