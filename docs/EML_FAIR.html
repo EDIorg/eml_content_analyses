@@ -165,8 +165,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.3.14" data-path="EML_FAIR.html"><a href="EML_FAIR.html#provenance-data-source-present"><i class="fa fa-check"></i><b>2.3.14</b> provenance data source present</a></li>
 <li class="chapter" data-level="2.3.15" data-path="EML_FAIR.html"><a href="EML_FAIR.html#processing-code-present-and-described"><i class="fa fa-check"></i><b>2.3.15</b> processing code present and described</a></li>
 <li class="chapter" data-level="2.3.16" data-path="EML_FAIR.html"><a href="EML_FAIR.html#entity-information"><i class="fa fa-check"></i><b>2.3.16</b> entity information</a></li>
-<li class="chapter" data-level="2.3.17" data-path="EML_FAIR.html"><a href="EML_FAIR.html#table-entity-specific-information"><i class="fa fa-check"></i><b>2.3.17</b> table entity specific information</a></li>
-<li class="chapter" data-level="2.3.18" data-path="EML_FAIR.html"><a href="EML_FAIR.html#attribute-information"><i class="fa fa-check"></i><b>2.3.18</b> attribute information</a></li>
+<li class="chapter" data-level="2.3.17" data-path="EML_FAIR.html"><a href="EML_FAIR.html#determine-file-format"><i class="fa fa-check"></i><b>2.3.17</b> determine file format</a></li>
+<li class="chapter" data-level="2.3.18" data-path="EML_FAIR.html"><a href="EML_FAIR.html#table-entity-specific-information"><i class="fa fa-check"></i><b>2.3.18</b> table entity specific information</a></li>
+<li class="chapter" data-level="2.3.19" data-path="EML_FAIR.html"><a href="EML_FAIR.html#attribute-information"><i class="fa fa-check"></i><b>2.3.19</b> attribute information</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -887,19 +888,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="EML_FAIR.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EDIutils)</span>
 <span id="cb1-2"><a href="EML_FAIR.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xml2)</span>
 <span id="cb1-3"><a href="EML_FAIR.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
-<span id="cb1-4"><a href="EML_FAIR.html#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="EML_FAIR.html#cb1-5" aria-hidden="true" tabindex="-1"></a>scope <span class="ot">&lt;-</span> <span class="st">&quot;knb-lter-ntl&quot;</span></span>
-<span id="cb1-6"><a href="EML_FAIR.html#cb1-6" aria-hidden="true" tabindex="-1"></a>identifier <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb1-7"><a href="EML_FAIR.html#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="EML_FAIR.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#find the newest revision</span></span>
-<span id="cb1-9"><a href="EML_FAIR.html#cb1-9" aria-hidden="true" tabindex="-1"></a>revision <span class="ot">&lt;-</span> <span class="fu">list_data_package_revisions</span>(<span class="at">scope =</span> scope,</span>
-<span id="cb1-10"><a href="EML_FAIR.html#cb1-10" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">identifier =</span> identifier,</span>
-<span id="cb1-11"><a href="EML_FAIR.html#cb1-11" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">filter =</span> <span class="st">&quot;newest&quot;</span>)</span>
-<span id="cb1-12"><a href="EML_FAIR.html#cb1-12" aria-hidden="true" tabindex="-1"></a>package_id <span class="ot">&lt;-</span> <span class="fu">paste</span>(scope,identifier,revision, <span class="at">sep =</span> <span class="st">&quot;.&quot;</span>)</span>
-<span id="cb1-13"><a href="EML_FAIR.html#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="EML_FAIR.html#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the EML file for the data package ID and save EML locally.</span></span>
-<span id="cb1-15"><a href="EML_FAIR.html#cb1-15" aria-hidden="true" tabindex="-1"></a>eml_file <span class="ot">&lt;-</span> <span class="fu">read_metadata</span>(<span class="at">packageId =</span> package_id)</span>
-<span id="cb1-16"><a href="EML_FAIR.html#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#write_xml(eml_file, file = paste(&quot;./data/&quot;, package_id, &quot;xml&quot;, sep = &quot;.&quot;))</span></span></code></pre></div>
+<span id="cb1-4"><a href="EML_FAIR.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-5"><a href="EML_FAIR.html#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="EML_FAIR.html#cb1-6" aria-hidden="true" tabindex="-1"></a>scope <span class="ot">&lt;-</span> <span class="st">&quot;knb-lter-ntl&quot;</span></span>
+<span id="cb1-7"><a href="EML_FAIR.html#cb1-7" aria-hidden="true" tabindex="-1"></a>identifier <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb1-8"><a href="EML_FAIR.html#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="EML_FAIR.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#find the newest revision</span></span>
+<span id="cb1-10"><a href="EML_FAIR.html#cb1-10" aria-hidden="true" tabindex="-1"></a>revision <span class="ot">&lt;-</span> <span class="fu">list_data_package_revisions</span>(<span class="at">scope =</span> scope,</span>
+<span id="cb1-11"><a href="EML_FAIR.html#cb1-11" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">identifier =</span> identifier,</span>
+<span id="cb1-12"><a href="EML_FAIR.html#cb1-12" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">filter =</span> <span class="st">&quot;newest&quot;</span>)</span>
+<span id="cb1-13"><a href="EML_FAIR.html#cb1-13" aria-hidden="true" tabindex="-1"></a>package_id <span class="ot">&lt;-</span> <span class="fu">paste</span>(scope,identifier,revision, <span class="at">sep =</span> <span class="st">&quot;.&quot;</span>)</span>
+<span id="cb1-14"><a href="EML_FAIR.html#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="EML_FAIR.html#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the EML file for the data package ID and save EML locally.</span></span>
+<span id="cb1-16"><a href="EML_FAIR.html#cb1-16" aria-hidden="true" tabindex="-1"></a>eml_file <span class="ot">&lt;-</span> <span class="fu">read_metadata</span>(<span class="at">packageId =</span> package_id)</span>
+<span id="cb1-17"><a href="EML_FAIR.html#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#write_xml(eml_file, file = paste(&quot;./data/&quot;, package_id, &quot;xml&quot;, sep = &quot;.&quot;))</span></span></code></pre></div>
 </div>
 <div id="analyze-eml-content-1" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Analyze EML content</h2>
@@ -907,13 +909,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="dataset-has-id-and-id-is-resolvable" class="section level3" number="2.3.1">
 <h3><span class="header-section-number">2.3.1</span> dataset has ID and ID is resolvable</h3>
 <p>We know that all datasets in EDI have a metadata ID for valid EML, however, that ID is not resolvable. This checks to see if there is an alternateIdentifier that is resolvable. One possible ID is the EDI inserted DOI, but others are possible as well.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="EML_FAIR.html#cb2-1" aria-hidden="true" tabindex="-1"></a>  eml_alt_id <span class="ot">&lt;-</span> <span class="fu">xml_text</span>(<span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;./dataset/alternateIdentifier&#39;</span>))</span>
-<span id="cb2-2"><a href="EML_FAIR.html#cb2-2" aria-hidden="true" tabindex="-1"></a>  eml_alt_id_syst <span class="ot">&lt;-</span> <span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;./dataset/alternateIdentifier&#39;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-3"><a href="EML_FAIR.html#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xml_attr</span>(<span class="st">&#39;system&#39;</span>)</span>
-<span id="cb2-4"><a href="EML_FAIR.html#cb2-4" aria-hidden="true" tabindex="-1"></a>  eml_alt_id <span class="ot">&lt;-</span> <span class="fu">str_remove</span>(eml_alt_id, <span class="st">&#39;doi:&#39;</span>)</span>
-<span id="cb2-5"><a href="EML_FAIR.html#cb2-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-6"><a href="EML_FAIR.html#cb2-6" aria-hidden="true" tabindex="-1"></a>  eml_id_text <span class="ot">&lt;-</span> <span class="fu">paste</span>(eml_alt_id_syst, eml_alt_id, <span class="at">sep =</span> <span class="st">&#39;/&#39;</span>)</span>
-<span id="cb2-7"><a href="EML_FAIR.html#cb2-7" aria-hidden="true" tabindex="-1"></a>  eml_id_resolv <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">str_detect</span>(eml_id_text, <span class="st">&quot;https://|http://&quot;</span>), <span class="dv">1</span>, <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="EML_FAIR.html#cb2-1" aria-hidden="true" tabindex="-1"></a>  eml_id <span class="ot">&lt;-</span> <span class="fu">xml_attr</span>(eml_file, <span class="st">&#39;packageId&#39;</span>)</span>
+<span id="cb2-2"><a href="EML_FAIR.html#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="EML_FAIR.html#cb2-3" aria-hidden="true" tabindex="-1"></a>  eml_alt_id <span class="ot">&lt;-</span> <span class="fu">xml_text</span>(<span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;./dataset/alternateIdentifier&#39;</span>))</span>
+<span id="cb2-4"><a href="EML_FAIR.html#cb2-4" aria-hidden="true" tabindex="-1"></a>  eml_alt_id_syst <span class="ot">&lt;-</span> <span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;./dataset/alternateIdentifier&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-5"><a href="EML_FAIR.html#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xml_attr</span>(<span class="st">&#39;system&#39;</span>)</span>
+<span id="cb2-6"><a href="EML_FAIR.html#cb2-6" aria-hidden="true" tabindex="-1"></a>  eml_alt_id <span class="ot">&lt;-</span> <span class="fu">str_remove</span>(eml_alt_id, <span class="st">&#39;doi:&#39;</span>)</span>
+<span id="cb2-7"><a href="EML_FAIR.html#cb2-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-8"><a href="EML_FAIR.html#cb2-8" aria-hidden="true" tabindex="-1"></a>  eml_id_text <span class="ot">&lt;-</span> <span class="fu">paste</span>(eml_alt_id_syst, eml_alt_id, <span class="at">sep =</span> <span class="st">&#39;/&#39;</span>)</span>
+<span id="cb2-9"><a href="EML_FAIR.html#cb2-9" aria-hidden="true" tabindex="-1"></a>  eml_id_resolv <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">str_detect</span>(eml_id_text, <span class="st">&quot;https://|http://&quot;</span>), <span class="dv">1</span>, <span class="dv">0</span>)</span></code></pre></div>
 </div>
 <div id="title-length" class="section level3" number="2.3.2">
 <h3><span class="header-section-number">2.3.2</span> title length</h3>
@@ -943,18 +947,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3><span class="header-section-number">2.3.5</span> pub date</h3>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="EML_FAIR.html#cb6-1" aria-hidden="true" tabindex="-1"></a>eml_pubdate <span class="ot">&lt;-</span> <span class="fu">xml_text</span>(<span class="fu">xml_find_first</span>(eml_file, <span class="st">&#39;.//pubDate&#39;</span>))</span></code></pre></div>
 <p>#creator and orcid ID</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="EML_FAIR.html#cb7-1" aria-hidden="true" tabindex="-1"></a>eml_creators <span class="ot">&lt;-</span> <span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;./dataset/creator&#39;</span>)</span>
-<span id="cb7-2"><a href="EML_FAIR.html#cb7-2" aria-hidden="true" tabindex="-1"></a>num_creators <span class="ot">&lt;-</span> <span class="fu">length</span>(eml_creators)</span>
-<span id="cb7-3"><a href="EML_FAIR.html#cb7-3" aria-hidden="true" tabindex="-1"></a>num_orcids <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb7-4"><a href="EML_FAIR.html#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="EML_FAIR.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (num_creators <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
-<span id="cb7-6"><a href="EML_FAIR.html#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(eml_creators)) {</span>
-<span id="cb7-7"><a href="EML_FAIR.html#cb7-7" aria-hidden="true" tabindex="-1"></a>    eml_userid <span class="ot">&lt;-</span> <span class="fu">xml_find_first</span>(eml_creators[j], <span class="st">&#39;.//userId&#39;</span>)</span>
-<span id="cb7-8"><a href="EML_FAIR.html#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(eml_userid)){</span>
-<span id="cb7-9"><a href="EML_FAIR.html#cb7-9" aria-hidden="true" tabindex="-1"></a>      num_orcids <span class="ot">&lt;-</span> num_orcids <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb7-10"><a href="EML_FAIR.html#cb7-10" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb7-11"><a href="EML_FAIR.html#cb7-11" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb7-12"><a href="EML_FAIR.html#cb7-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="EML_FAIR.html#cb7-1" aria-hidden="true" tabindex="-1"></a>  num_creators <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;./dataset/creator&#39;</span>))</span>
+<span id="cb7-2"><a href="EML_FAIR.html#cb7-2" aria-hidden="true" tabindex="-1"></a>  num_orcids <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;./dataset/creator/userId&#39;</span>))</span></code></pre></div>
 </div>
 <div id="coverages-present" class="section level3" number="2.3.6">
 <h3><span class="header-section-number">2.3.6</span> coverages present</h3>
@@ -1056,76 +1050,109 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb18-16"><a href="EML_FAIR.html#cb18-16" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb18-17"><a href="EML_FAIR.html#cb18-17" aria-hidden="true" tabindex="-1"></a>num_entity_format <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_entity_info, <span class="st">&#39;//physical/dataFormat&#39;</span>))</span>
 <span id="cb18-18"><a href="EML_FAIR.html#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-19"><a href="EML_FAIR.html#cb18-19" aria-hidden="true" tabindex="-1"></a>  entity_ids_text <span class="ot">&lt;-</span> <span class="fu">xml_attr</span>(<span class="fu">xml_parent</span>(eml_entities), <span class="st">&#39;id&#39;</span>)</span>
-<span id="cb18-20"><a href="EML_FAIR.html#cb18-20" aria-hidden="true" tabindex="-1"></a>  entity_syst_text <span class="ot">&lt;-</span> <span class="fu">xml_attr</span>(<span class="fu">xml_parent</span>(eml_entities), <span class="st">&#39;system&#39;</span>)</span>
-<span id="cb18-21"><a href="EML_FAIR.html#cb18-21" aria-hidden="true" tabindex="-1"></a>  entity_ids <span class="ot">&lt;-</span> <span class="fu">length</span>(entity_ids_text[<span class="sc">!</span><span class="fu">is.na</span>(entity_ids_text)])</span>
-<span id="cb18-22"><a href="EML_FAIR.html#cb18-22" aria-hidden="true" tabindex="-1"></a>  entity_syst <span class="ot">&lt;-</span> <span class="fu">length</span>(entity_syst_text[<span class="sc">!</span><span class="fu">is.na</span>(entity_syst_text)])</span>
-<span id="cb18-23"><a href="EML_FAIR.html#cb18-23" aria-hidden="true" tabindex="-1"></a>  entity_alt_ids <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(<span class="fu">xml_parent</span>(eml_entity_info), <span class="st">&#39;./alternateIdentifier&#39;</span>))</span>
-<span id="cb18-24"><a href="EML_FAIR.html#cb18-24" aria-hidden="true" tabindex="-1"></a>  entity_ids <span class="ot">&lt;-</span> entity_ids <span class="sc">+</span> entity_alt_ids</span>
-<span id="cb18-25"><a href="EML_FAIR.html#cb18-25" aria-hidden="true" tabindex="-1"></a>  num_entity_id <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(entity_ids <span class="sc">&gt;</span> num_entities, num_entities, entity_ids)</span>
-<span id="cb18-26"><a href="EML_FAIR.html#cb18-26" aria-hidden="true" tabindex="-1"></a>  entity_alt_syst <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(<span class="fu">xml_parent</span>(eml_entity_info), <span class="st">&#39;./alternateIdentifier[@system]&#39;</span>))</span>
-<span id="cb18-27"><a href="EML_FAIR.html#cb18-27" aria-hidden="true" tabindex="-1"></a>  entity_syst <span class="ot">&lt;-</span> entity_syst <span class="sc">+</span> entity_alt_syst</span>
-<span id="cb18-28"><a href="EML_FAIR.html#cb18-28" aria-hidden="true" tabindex="-1"></a>  num_entity_syst <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(entity_syst <span class="sc">&gt;</span> num_entities, num_entities, entity_syst)</span>
+<span id="cb18-19"><a href="EML_FAIR.html#cb18-19" aria-hidden="true" tabindex="-1"></a>entity_ids_text <span class="ot">&lt;-</span> <span class="fu">xml_attr</span>(<span class="fu">xml_parent</span>(eml_entities), <span class="st">&#39;id&#39;</span>)</span>
+<span id="cb18-20"><a href="EML_FAIR.html#cb18-20" aria-hidden="true" tabindex="-1"></a>entity_syst_text <span class="ot">&lt;-</span> <span class="fu">xml_attr</span>(<span class="fu">xml_parent</span>(eml_entities), <span class="st">&#39;system&#39;</span>)</span>
+<span id="cb18-21"><a href="EML_FAIR.html#cb18-21" aria-hidden="true" tabindex="-1"></a>entity_ids <span class="ot">&lt;-</span> <span class="fu">length</span>(entity_ids_text[<span class="sc">!</span><span class="fu">is.na</span>(entity_ids_text)])</span>
+<span id="cb18-22"><a href="EML_FAIR.html#cb18-22" aria-hidden="true" tabindex="-1"></a>entity_syst <span class="ot">&lt;-</span> <span class="fu">length</span>(entity_syst_text[<span class="sc">!</span><span class="fu">is.na</span>(entity_syst_text)])</span>
+<span id="cb18-23"><a href="EML_FAIR.html#cb18-23" aria-hidden="true" tabindex="-1"></a>entity_alt_ids <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(<span class="fu">xml_parent</span>(eml_entity_info), <span class="st">&#39;./alternateIdentifier&#39;</span>))</span>
+<span id="cb18-24"><a href="EML_FAIR.html#cb18-24" aria-hidden="true" tabindex="-1"></a>entity_ids <span class="ot">&lt;-</span> entity_ids <span class="sc">+</span> entity_alt_ids</span>
+<span id="cb18-25"><a href="EML_FAIR.html#cb18-25" aria-hidden="true" tabindex="-1"></a>num_entity_id <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(entity_ids <span class="sc">&gt;</span> num_entities, num_entities, entity_ids)</span>
+<span id="cb18-26"><a href="EML_FAIR.html#cb18-26" aria-hidden="true" tabindex="-1"></a>entity_alt_syst <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(<span class="fu">xml_parent</span>(eml_entity_info), <span class="st">&#39;./alternateIdentifier[@system]&#39;</span>))</span>
+<span id="cb18-27"><a href="EML_FAIR.html#cb18-27" aria-hidden="true" tabindex="-1"></a>entity_syst <span class="ot">&lt;-</span> entity_syst <span class="sc">+</span> entity_alt_syst</span>
+<span id="cb18-28"><a href="EML_FAIR.html#cb18-28" aria-hidden="true" tabindex="-1"></a>num_entity_syst <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(entity_syst <span class="sc">&gt;</span> num_entities, num_entities, entity_syst)</span>
 <span id="cb18-29"><a href="EML_FAIR.html#cb18-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-30"><a href="EML_FAIR.html#cb18-30" aria-hidden="true" tabindex="-1"></a>num_otherentity <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;//otherEntity&#39;</span>))</span></code></pre></div>
 </div>
-<div id="table-entity-specific-information" class="section level3" number="2.3.17">
-<h3><span class="header-section-number">2.3.17</span> table entity specific information</h3>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="EML_FAIR.html#cb19-1" aria-hidden="true" tabindex="-1"></a>eml_tableentities <span class="ot">&lt;-</span> <span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;.//dataTable&#39;</span>)</span>
-<span id="cb19-2"><a href="EML_FAIR.html#cb19-2" aria-hidden="true" tabindex="-1"></a>num_tables <span class="ot">&lt;-</span> <span class="fu">length</span>(eml_tableentities)</span></code></pre></div>
+<div id="determine-file-format" class="section level3" number="2.3.17">
+<h3><span class="header-section-number">2.3.17</span> determine file format</h3>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="EML_FAIR.html#cb19-1" aria-hidden="true" tabindex="-1"></a>eml_entity_filename <span class="ot">&lt;-</span> <span class="fu">xml_text</span>(<span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;.//physical/objectName&#39;</span>))</span>
+<span id="cb19-2"><a href="EML_FAIR.html#cb19-2" aria-hidden="true" tabindex="-1"></a>entity_extensions <span class="ot">&lt;-</span> <span class="fu">vector</span>()</span>
+<span id="cb19-3"><a href="EML_FAIR.html#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="EML_FAIR.html#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">length</span>(eml_entity_filename) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb19-5"><a href="EML_FAIR.html#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(eml_entity_filename)) {</span>
+<span id="cb19-6"><a href="EML_FAIR.html#cb19-6" aria-hidden="true" tabindex="-1"></a>    eml_extension_parts <span class="ot">&lt;-</span> <span class="fu">str_split</span>(eml_entity_filename[j], <span class="st">&#39;</span><span class="sc">\\</span><span class="st">.&#39;</span>)</span>
+<span id="cb19-7"><a href="EML_FAIR.html#cb19-7" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">length</span>(eml_extension_parts[[<span class="dv">1</span>]])</span>
+<span id="cb19-8"><a href="EML_FAIR.html#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(p<span class="sc">&gt;</span><span class="dv">1</span>) {</span>
+<span id="cb19-9"><a href="EML_FAIR.html#cb19-9" aria-hidden="true" tabindex="-1"></a>      entity_extensions[j] <span class="ot">&lt;-</span> eml_extension_parts[[<span class="dv">1</span>]][p]</span>
+<span id="cb19-10"><a href="EML_FAIR.html#cb19-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb19-11"><a href="EML_FAIR.html#cb19-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-12"><a href="EML_FAIR.html#cb19-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-13"><a href="EML_FAIR.html#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="EML_FAIR.html#cb19-14" aria-hidden="true" tabindex="-1"></a>extensions <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(entity_extensions)</span>
+<span id="cb19-15"><a href="EML_FAIR.html#cb19-15" aria-hidden="true" tabindex="-1"></a>standard <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&#39;https://github.com/NCEAS/metadig-checks/raw/main/data/DataONEformats.csv&#39;</span>)</span>
+<span id="cb19-16"><a href="EML_FAIR.html#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="EML_FAIR.html#cb19-17" aria-hidden="true" tabindex="-1"></a>standard <span class="ot">&lt;-</span> standard <span class="sc">%&gt;%</span></span>
+<span id="cb19-18"><a href="EML_FAIR.html#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(File.Extension, isProprietary) <span class="sc">%&gt;%</span></span>
+<span id="cb19-19"><a href="EML_FAIR.html#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">entity_extensions =</span> <span class="fu">str_trim</span>(File.Extension)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-20"><a href="EML_FAIR.html#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">isProprietary =</span> <span class="fu">str_trim</span>(isProprietary)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-21"><a href="EML_FAIR.html#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">nchar</span>(File.Extension) <span class="sc">&gt;</span> <span class="dv">1</span>)</span>
+<span id="cb19-22"><a href="EML_FAIR.html#cb19-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-23"><a href="EML_FAIR.html#cb19-23" aria-hidden="true" tabindex="-1"></a>format <span class="ot">&lt;-</span> <span class="fu">left_join</span>(extensions, standard, <span class="at">by =</span> <span class="st">&quot;entity_extensions&quot;</span>)</span>
+<span id="cb19-24"><a href="EML_FAIR.html#cb19-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-25"><a href="EML_FAIR.html#cb19-25" aria-hidden="true" tabindex="-1"></a>open <span class="ot">&lt;-</span> format <span class="sc">%&gt;%</span></span>
+<span id="cb19-26"><a href="EML_FAIR.html#cb19-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(isProprietary) <span class="sc">%&gt;%</span></span>
+<span id="cb19-27"><a href="EML_FAIR.html#cb19-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>())</span>
+<span id="cb19-28"><a href="EML_FAIR.html#cb19-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-29"><a href="EML_FAIR.html#cb19-29" aria-hidden="true" tabindex="-1"></a>num_file_proprietary <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">any</span>(open<span class="sc">$</span>isProprietary <span class="sc">==</span> <span class="st">&#39;Y&#39;</span>), open<span class="sc">$</span>count[open<span class="sc">$</span>isProprietary <span class="sc">==</span> <span class="st">&#39;Y&#39;</span>], <span class="dv">0</span>)</span>
+<span id="cb19-30"><a href="EML_FAIR.html#cb19-30" aria-hidden="true" tabindex="-1"></a>num_file_open  <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">any</span>(open<span class="sc">$</span>isProprietary <span class="sc">==</span> <span class="st">&#39;N&#39;</span>), open<span class="sc">$</span>count[open<span class="sc">$</span>isProprietary <span class="sc">==</span> <span class="st">&#39;N&#39;</span>], <span class="dv">0</span>)</span></code></pre></div>
 </div>
-<div id="attribute-information" class="section level3" number="2.3.18">
-<h3><span class="header-section-number">2.3.18</span> attribute information</h3>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="EML_FAIR.html#cb20-1" aria-hidden="true" tabindex="-1"></a>num_attributes <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb20-2"><a href="EML_FAIR.html#cb20-2" aria-hidden="true" tabindex="-1"></a>num_attributedefs <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb20-3"><a href="EML_FAIR.html#cb20-3" aria-hidden="true" tabindex="-1"></a>num_attrdefsufficient <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb20-4"><a href="EML_FAIR.html#cb20-4" aria-hidden="true" tabindex="-1"></a>num_attributedefdifferent <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb20-5"><a href="EML_FAIR.html#cb20-5" aria-hidden="true" tabindex="-1"></a>num_attributestoragetype <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb20-6"><a href="EML_FAIR.html#cb20-6" aria-hidden="true" tabindex="-1"></a>attr_nameunique <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb20-7"><a href="EML_FAIR.html#cb20-7" aria-hidden="true" tabindex="-1"></a>num_attributeprecision <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb20-8"><a href="EML_FAIR.html#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-9"><a href="EML_FAIR.html#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(eml_tableentities) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
-<span id="cb20-10"><a href="EML_FAIR.html#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(eml_tableentities)){</span>
-<span id="cb20-11"><a href="EML_FAIR.html#cb20-11" aria-hidden="true" tabindex="-1"></a>    eml_attributes <span class="ot">&lt;-</span> <span class="fu">xml_find_all</span>(eml_tableentities[j], <span class="st">&#39;.//attribute&#39;</span>)</span>
-<span id="cb20-12"><a href="EML_FAIR.html#cb20-12" aria-hidden="true" tabindex="-1"></a>    num_attributes <span class="ot">&lt;-</span> num_attributes <span class="sc">+</span> <span class="fu">length</span>(eml_attributes)</span>
-<span id="cb20-13"><a href="EML_FAIR.html#cb20-13" aria-hidden="true" tabindex="-1"></a>    num_attributedefs <span class="ot">&lt;-</span> num_attributedefs <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./attributeDefinition&#39;</span>))</span>
-<span id="cb20-14"><a href="EML_FAIR.html#cb20-14" aria-hidden="true" tabindex="-1"></a>    num_attributeprecision <span class="ot">&lt;-</span> num_attributeprecision <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./measurementScale/interval/precision&#39;</span>))</span>
-<span id="cb20-15"><a href="EML_FAIR.html#cb20-15" aria-hidden="true" tabindex="-1"></a>    num_attributeprecision <span class="ot">&lt;-</span> num_attributeprecision <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./measurementScale/ratio/precision&#39;</span>))</span>
-<span id="cb20-16"><a href="EML_FAIR.html#cb20-16" aria-hidden="true" tabindex="-1"></a>    num_attributeprecision <span class="ot">&lt;-</span> num_attributeprecision <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./measurementScale/dateTime/dateTimePrecision&#39;</span>))</span>
-<span id="cb20-17"><a href="EML_FAIR.html#cb20-17" aria-hidden="true" tabindex="-1"></a>    num_attributestoragetype <span class="ot">&lt;-</span> num_attributestoragetype <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./storageType&#39;</span>))</span>
-<span id="cb20-18"><a href="EML_FAIR.html#cb20-18" aria-hidden="true" tabindex="-1"></a>    attr_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;&#39;</span>)</span>
-<span id="cb20-19"><a href="EML_FAIR.html#cb20-19" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb20-20"><a href="EML_FAIR.html#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(eml_attributes) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
-<span id="cb20-21"><a href="EML_FAIR.html#cb20-21" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(eml_attributes)) {</span>
-<span id="cb20-22"><a href="EML_FAIR.html#cb20-22" aria-hidden="true" tabindex="-1"></a>        eml_attributename <span class="ot">&lt;-</span> <span class="fu">xml_text</span>(<span class="fu">xml_find_first</span>(eml_attributes[k], <span class="st">&#39;./attributeName&#39;</span>))</span>
-<span id="cb20-23"><a href="EML_FAIR.html#cb20-23" aria-hidden="true" tabindex="-1"></a>        eml_attributedef <span class="ot">&lt;-</span> <span class="fu">xml_text</span>(<span class="fu">xml_find_first</span>(eml_attributes[k], <span class="st">&#39;./attributeDefinition&#39;</span>))</span>
-<span id="cb20-24"><a href="EML_FAIR.html#cb20-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (eml_attributedef <span class="sc">!=</span> eml_attributename){</span>
-<span id="cb20-25"><a href="EML_FAIR.html#cb20-25" aria-hidden="true" tabindex="-1"></a>          num_attributedefdifferent <span class="ot">&lt;-</span> num_attributedefdifferent <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb20-26"><a href="EML_FAIR.html#cb20-26" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb20-27"><a href="EML_FAIR.html#cb20-27" aria-hidden="true" tabindex="-1"></a>        attr_names <span class="ot">&lt;-</span> <span class="fu">append</span>(attr_names, eml_attributename)</span>
-<span id="cb20-28"><a href="EML_FAIR.html#cb20-28" aria-hidden="true" tabindex="-1"></a>        attrdef_words <span class="ot">&lt;-</span> <span class="fu">str_split</span>(eml_attributedef, <span class="st">&#39;</span><span class="sc">\\</span><span class="st">s+&#39;</span>)</span>
-<span id="cb20-29"><a href="EML_FAIR.html#cb20-29" aria-hidden="true" tabindex="-1"></a>        attrdef_length <span class="ot">&lt;-</span> <span class="fu">length</span>(attrdef_words[[<span class="dv">1</span>]])</span>
-<span id="cb20-30"><a href="EML_FAIR.html#cb20-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (attrdef_length <span class="sc">&gt;</span> <span class="dv">2</span>){</span>
-<span id="cb20-31"><a href="EML_FAIR.html#cb20-31" aria-hidden="true" tabindex="-1"></a>          num_attrdefsufficient <span class="ot">&lt;-</span> num_attrdefsufficient <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb20-32"><a href="EML_FAIR.html#cb20-32" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb20-33"><a href="EML_FAIR.html#cb20-33" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb20-34"><a href="EML_FAIR.html#cb20-34" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb20-35"><a href="EML_FAIR.html#cb20-35" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb20-36"><a href="EML_FAIR.html#cb20-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(attr_names)) <span class="sc">==</span> <span class="fu">length</span>(attr_names)){</span>
-<span id="cb20-37"><a href="EML_FAIR.html#cb20-37" aria-hidden="true" tabindex="-1"></a>      attr_nameunique <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb20-38"><a href="EML_FAIR.html#cb20-38" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb20-39"><a href="EML_FAIR.html#cb20-39" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb20-40"><a href="EML_FAIR.html#cb20-40" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-41"><a href="EML_FAIR.html#cb20-41" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-42"><a href="EML_FAIR.html#cb20-42" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="EML_FAIR.html#cb21-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;package ID&quot;</span>, <span class="st">&quot;dataset ID resolvable&quot;</span>, <span class="st">&quot;number of words in title&quot;</span>, <span class="st">&quot;number of words in abstract&quot;</span>, <span class="st">&quot;number of keywords&quot;</span>, <span class="st">&quot;number of keywords with type&quot;</span>, <span class="st">&quot;thesauri identified&quot;</span>, <span class="st">&quot;publication date present&quot;</span>, <span class="st">&quot;number of creators&quot;</span>, <span class="st">&quot;number of creators with ID&quot;</span>, <span class="st">&quot;geographic coverage present&quot;</span>, <span class="st">&quot;geographic description present&quot;</span>, <span class="st">&quot;temporal coverage present&quot;</span>, <span class="st">&quot;taxononimc coverage present&quot;</span>, <span class="st">&quot;public access granted&quot;</span>, <span class="st">&quot;number of dataset contacts&quot;</span>, <span class="st">&quot;number of contacts with ID&quot;</span>, <span class="st">&quot;number of publishers&quot;</span>, <span class="st">&quot;number of publisher with ID&quot;</span>, <span class="st">&quot;landing page link&quot;</span>, <span class="st">&quot;number of words in methods description&quot;</span>, <span class="st">&quot;processing code in software element&quot;</span>, <span class="st">&quot;processing code in other entity&quot;</span>, <span class="st">&quot;license present&quot;</span>, <span class="st">&quot;provenance datasource linked&quot;</span>, <span class="st">&quot;number of table entities&quot;</span>, <span class="st">&quot;number of other entities&quot;</span>, <span class="st">&quot;number of all entities&quot;</span>, <span class="st">&quot;number of entity IDs present&quot;</span>, <span class="st">&quot;number of entitis downloadable&quot;</span>, <span class="st">&quot;number of entities with checksums&quot;</span>, <span class="st">&quot;number of entities with descriptions&quot;</span>, <span class="st">&quot;number of enity description of sufficient length&quot;</span>, <span class="st">&quot;number of entities with format defined&quot;</span>, <span class="st">&quot;attribute names unique within each entity&quot;</span>, <span class="st">&quot;number of attributes&quot;</span>, <span class="st">&quot;number of attribute definitions&quot;</span>, <span class="st">&quot;number of attribute definitions of sufficient length&quot;</span>, <span class="st">&quot;attribute definition different then attribute name&quot;</span>, <span class="st">&quot;attribute storage type defined&quot;</span>, <span class="st">&quot;attribute precision defined&quot;</span>, <span class="st">&quot;number of data quality descriptions&quot;</span>)</span>
-<span id="cb21-2"><a href="EML_FAIR.html#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="EML_FAIR.html#cb21-3" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">c</span>(package_id, eml_id_text, title_length, abstract_length, num_keywords, num_keywordtype, num_thesaurus, eml_pubdate, num_creators, num_orcids, eml_geog, eml_geog_descr, eml_time, eml_taxon, public, eml_contact, eml_contact_id, eml_publisher, eml_publisher_id, eml_landing, methods_length, num_software, script, num_license, num_provdatasource, num_tables, num_otherentity, num_entities, num_entity_id, num_entity_url, num_checksum, num_entitydescr, num_enitydescrsufficient, num_entity_format, attr_nameunique, num_attributes, num_attributedefs, num_attrdefsufficient, num_attributedefdifferent, num_attributestoragetype, num_attributeprecision, num_qualitydesc)</span>
-<span id="cb21-4"><a href="EML_FAIR.html#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-5"><a href="EML_FAIR.html#cb21-5" aria-hidden="true" tabindex="-1"></a>evaluation <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(test, result)</span>
-<span id="cb21-6"><a href="EML_FAIR.html#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="EML_FAIR.html#cb21-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(evaluation, <span class="at">table.attr =</span> <span class="st">&quot;class=</span><span class="sc">\&quot;</span><span class="st">striped</span><span class="sc">\&quot;</span><span class="st">&quot;</span>,</span>
-<span id="cb21-8"><a href="EML_FAIR.html#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;html&quot;</span>)</span></code></pre></div>
+<div id="table-entity-specific-information" class="section level3" number="2.3.18">
+<h3><span class="header-section-number">2.3.18</span> table entity specific information</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="EML_FAIR.html#cb20-1" aria-hidden="true" tabindex="-1"></a>eml_tableentities <span class="ot">&lt;-</span> <span class="fu">xml_find_all</span>(eml_file, <span class="st">&#39;.//dataTable&#39;</span>)</span>
+<span id="cb20-2"><a href="EML_FAIR.html#cb20-2" aria-hidden="true" tabindex="-1"></a>num_tables <span class="ot">&lt;-</span> <span class="fu">length</span>(eml_tableentities)</span></code></pre></div>
+</div>
+<div id="attribute-information" class="section level3" number="2.3.19">
+<h3><span class="header-section-number">2.3.19</span> attribute information</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="EML_FAIR.html#cb21-1" aria-hidden="true" tabindex="-1"></a>num_attributes <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-2"><a href="EML_FAIR.html#cb21-2" aria-hidden="true" tabindex="-1"></a>num_attributedefs <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-3"><a href="EML_FAIR.html#cb21-3" aria-hidden="true" tabindex="-1"></a>num_attrdefsufficient <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-4"><a href="EML_FAIR.html#cb21-4" aria-hidden="true" tabindex="-1"></a>num_attributedefdifferent <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-5"><a href="EML_FAIR.html#cb21-5" aria-hidden="true" tabindex="-1"></a>num_attributestoragetype <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-6"><a href="EML_FAIR.html#cb21-6" aria-hidden="true" tabindex="-1"></a>attr_nameunique <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-7"><a href="EML_FAIR.html#cb21-7" aria-hidden="true" tabindex="-1"></a>num_attributeprecision <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-8"><a href="EML_FAIR.html#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="EML_FAIR.html#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(eml_tableentities) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
+<span id="cb21-10"><a href="EML_FAIR.html#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(eml_tableentities)){</span>
+<span id="cb21-11"><a href="EML_FAIR.html#cb21-11" aria-hidden="true" tabindex="-1"></a>    eml_attributes <span class="ot">&lt;-</span> <span class="fu">xml_find_all</span>(eml_tableentities[j], <span class="st">&#39;.//attribute&#39;</span>)</span>
+<span id="cb21-12"><a href="EML_FAIR.html#cb21-12" aria-hidden="true" tabindex="-1"></a>    num_attributes <span class="ot">&lt;-</span> num_attributes <span class="sc">+</span> <span class="fu">length</span>(eml_attributes)</span>
+<span id="cb21-13"><a href="EML_FAIR.html#cb21-13" aria-hidden="true" tabindex="-1"></a>    num_attributedefs <span class="ot">&lt;-</span> num_attributedefs <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./attributeDefinition&#39;</span>))</span>
+<span id="cb21-14"><a href="EML_FAIR.html#cb21-14" aria-hidden="true" tabindex="-1"></a>    num_attributeprecision <span class="ot">&lt;-</span> num_attributeprecision <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./measurementScale/interval/precision&#39;</span>))</span>
+<span id="cb21-15"><a href="EML_FAIR.html#cb21-15" aria-hidden="true" tabindex="-1"></a>    num_attributeprecision <span class="ot">&lt;-</span> num_attributeprecision <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./measurementScale/ratio/precision&#39;</span>))</span>
+<span id="cb21-16"><a href="EML_FAIR.html#cb21-16" aria-hidden="true" tabindex="-1"></a>    num_attributeprecision <span class="ot">&lt;-</span> num_attributeprecision <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./measurementScale/dateTime/dateTimePrecision&#39;</span>))</span>
+<span id="cb21-17"><a href="EML_FAIR.html#cb21-17" aria-hidden="true" tabindex="-1"></a>    num_attributestoragetype <span class="ot">&lt;-</span> num_attributestoragetype <span class="sc">+</span> <span class="fu">length</span>(<span class="fu">xml_find_all</span>(eml_attributes, <span class="st">&#39;./storageType&#39;</span>))</span>
+<span id="cb21-18"><a href="EML_FAIR.html#cb21-18" aria-hidden="true" tabindex="-1"></a>    attr_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;&#39;</span>)</span>
+<span id="cb21-19"><a href="EML_FAIR.html#cb21-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-20"><a href="EML_FAIR.html#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(eml_attributes) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
+<span id="cb21-21"><a href="EML_FAIR.html#cb21-21" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(eml_attributes)) {</span>
+<span id="cb21-22"><a href="EML_FAIR.html#cb21-22" aria-hidden="true" tabindex="-1"></a>        eml_attributename <span class="ot">&lt;-</span> <span class="fu">xml_text</span>(<span class="fu">xml_find_first</span>(eml_attributes[k], <span class="st">&#39;./attributeName&#39;</span>))</span>
+<span id="cb21-23"><a href="EML_FAIR.html#cb21-23" aria-hidden="true" tabindex="-1"></a>        eml_attributedef <span class="ot">&lt;-</span> <span class="fu">xml_text</span>(<span class="fu">xml_find_first</span>(eml_attributes[k], <span class="st">&#39;./attributeDefinition&#39;</span>))</span>
+<span id="cb21-24"><a href="EML_FAIR.html#cb21-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (eml_attributedef <span class="sc">!=</span> eml_attributename){</span>
+<span id="cb21-25"><a href="EML_FAIR.html#cb21-25" aria-hidden="true" tabindex="-1"></a>          num_attributedefdifferent <span class="ot">&lt;-</span> num_attributedefdifferent <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb21-26"><a href="EML_FAIR.html#cb21-26" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb21-27"><a href="EML_FAIR.html#cb21-27" aria-hidden="true" tabindex="-1"></a>        attr_names <span class="ot">&lt;-</span> <span class="fu">append</span>(attr_names, eml_attributename)</span>
+<span id="cb21-28"><a href="EML_FAIR.html#cb21-28" aria-hidden="true" tabindex="-1"></a>        attrdef_words <span class="ot">&lt;-</span> <span class="fu">str_split</span>(eml_attributedef, <span class="st">&#39;</span><span class="sc">\\</span><span class="st">s+&#39;</span>)</span>
+<span id="cb21-29"><a href="EML_FAIR.html#cb21-29" aria-hidden="true" tabindex="-1"></a>        attrdef_length <span class="ot">&lt;-</span> <span class="fu">length</span>(attrdef_words[[<span class="dv">1</span>]])</span>
+<span id="cb21-30"><a href="EML_FAIR.html#cb21-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (attrdef_length <span class="sc">&gt;</span> <span class="dv">2</span>){</span>
+<span id="cb21-31"><a href="EML_FAIR.html#cb21-31" aria-hidden="true" tabindex="-1"></a>          num_attrdefsufficient <span class="ot">&lt;-</span> num_attrdefsufficient <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb21-32"><a href="EML_FAIR.html#cb21-32" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb21-33"><a href="EML_FAIR.html#cb21-33" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb21-34"><a href="EML_FAIR.html#cb21-34" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb21-35"><a href="EML_FAIR.html#cb21-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-36"><a href="EML_FAIR.html#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(attr_names)) <span class="sc">==</span> <span class="fu">length</span>(attr_names)){</span>
+<span id="cb21-37"><a href="EML_FAIR.html#cb21-37" aria-hidden="true" tabindex="-1"></a>      attr_nameunique <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb21-38"><a href="EML_FAIR.html#cb21-38" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb21-39"><a href="EML_FAIR.html#cb21-39" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-40"><a href="EML_FAIR.html#cb21-40" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-41"><a href="EML_FAIR.html#cb21-41" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-42"><a href="EML_FAIR.html#cb21-42" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="EML_FAIR.html#cb22-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;package ID&quot;</span>, <span class="st">&quot;dataset ID resolvable&quot;</span>, <span class="st">&quot;number of words in title&quot;</span>, <span class="st">&quot;number of words in abstract&quot;</span>, <span class="st">&quot;number of keywords&quot;</span>, <span class="st">&quot;number of keywords with type&quot;</span>, <span class="st">&quot;thesauri identified&quot;</span>, <span class="st">&quot;publication date present&quot;</span>, <span class="st">&quot;number of creators&quot;</span>, <span class="st">&quot;number of creators with ID&quot;</span>, <span class="st">&quot;geographic coverage present&quot;</span>, <span class="st">&quot;geographic description present&quot;</span>, <span class="st">&quot;temporal coverage present&quot;</span>, <span class="st">&quot;taxononimc coverage present&quot;</span>, <span class="st">&quot;public access granted&quot;</span>, <span class="st">&quot;number of dataset contacts&quot;</span>, <span class="st">&quot;number of contacts with ID&quot;</span>, <span class="st">&quot;number of publishers&quot;</span>, <span class="st">&quot;number of publisher with ID&quot;</span>, <span class="st">&quot;landing page link&quot;</span>, <span class="st">&quot;number of words in methods description&quot;</span>, <span class="st">&quot;processing code in software element&quot;</span>, <span class="st">&quot;processing code in other entity&quot;</span>, <span class="st">&quot;license present&quot;</span>, <span class="st">&quot;provenance datasource linked&quot;</span>, <span class="st">&quot;number of table entities&quot;</span>, <span class="st">&quot;number of other entities&quot;</span>, <span class="st">&quot;number of all entities&quot;</span>, <span class="st">&quot;number of entity IDs present&quot;</span>, <span class="st">&quot;number of entitis downloadable&quot;</span>, <span class="st">&quot;number of entities with checksums&quot;</span>, <span class="st">&quot;number of entities with descriptions&quot;</span>, <span class="st">&quot;number of enity description of sufficient length&quot;</span>, <span class="st">&quot;number of entities with format defined&quot;</span>, <span class="st">&quot;number of entities open format&quot;</span>, <span class="st">&quot;number of entities proprietary format&quot;</span>, <span class="st">&quot;attribute names unique within each entity&quot;</span>, <span class="st">&quot;number of attributes&quot;</span>, <span class="st">&quot;number of attribute definitions&quot;</span>, <span class="st">&quot;number of attribute definitions of sufficient length&quot;</span>, <span class="st">&quot;attribute definition different then attribute name&quot;</span>, <span class="st">&quot;attribute storage type defined&quot;</span>, <span class="st">&quot;attribute precision defined&quot;</span>, <span class="st">&quot;number of data quality descriptions&quot;</span>)</span>
+<span id="cb22-2"><a href="EML_FAIR.html#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="EML_FAIR.html#cb22-3" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">c</span>(eml_id, eml_id_text, title_length, abstract_length, num_keywords, num_keywordtype, num_thesaurus, eml_pubdate, num_creators, num_orcids, eml_geog, eml_geog_descr, eml_time, eml_taxon, public, eml_contact, eml_contact_id, eml_publisher, eml_publisher_id, eml_landing, methods_length, num_software, script, num_license, num_provdatasource, num_tables, num_otherentity, num_entities, num_entity_id, num_entity_url, num_checksum, num_entitydescr, num_enitydescrsufficient, num_entity_format, num_file_open, num_file_proprietary, attr_nameunique, num_attributes, num_attributedefs, num_attrdefsufficient, num_attributedefdifferent, num_attributestoragetype, num_attributeprecision, num_qualitydesc)</span>
+<span id="cb22-4"><a href="EML_FAIR.html#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="EML_FAIR.html#cb22-5" aria-hidden="true" tabindex="-1"></a>evaluation <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(test, result)</span>
+<span id="cb22-6"><a href="EML_FAIR.html#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="EML_FAIR.html#cb22-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(evaluation, <span class="at">table.attr =</span> <span class="st">&quot;class=</span><span class="sc">\&quot;</span><span class="st">striped</span><span class="sc">\&quot;</span><span class="st">&quot;</span>,</span>
+<span id="cb22-8"><a href="EML_FAIR.html#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;html&quot;</span>)</span></code></pre></div>
 <table class="striped">
 <thead>
 <tr>
@@ -1408,6 +1435,22 @@ number of entities with format defined
 </td>
 <td style="text-align:left;">
 1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+number of entities open format
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+number of entities proprietary format
+</td>
+<td style="text-align:left;">
+0
 </td>
 </tr>
 <tr>

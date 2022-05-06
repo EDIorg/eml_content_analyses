@@ -104,6 +104,7 @@ For more information see the [EDIutils R package](https://docs.ropensci.org/EDIu
 library(EDIutils)
 library(xml2)
 library(stringr)
+library(tidyverse)
 
 scope <- "knb-lter-ntl"
 identifier <- 1
@@ -129,6 +130,7 @@ These checks are not comprehensive. Checks for semantic annotations are not impl
 We know that all datasets in EDI have a metadata ID for valid EML, however, that ID is not resolvable. This checks to see if there is an alternateIdentifier that is resolvable. One possible ID is the EDI inserted DOI, but others are possible as well.
 
 ```{r}
+  eml_id <- xml_attr(eml_file, 'packageId')
 
   eml_alt_id <- xml_text(xml_find_all(eml_file, './dataset/alternateIdentifier'))
   eml_alt_id_syst <- xml_find_all(eml_file, './dataset/alternateIdentifier') %>%
@@ -175,18 +177,8 @@ eml_pubdate <- xml_text(xml_find_first(eml_file, './/pubDate'))
 
 #creator and orcid ID
 ```{r}
-eml_creators <- xml_find_all(eml_file, './dataset/creator')
-num_creators <- length(eml_creators)
-num_orcids <- 0
-
-if (num_creators > 0){
-  for (j in 1:length(eml_creators)) {
-    eml_userid <- xml_find_first(eml_creators[j], './/userId')
-    if (!is.na(eml_userid)){
-      num_orcids <- num_orcids + 1
-    }
-  }
-}
+  num_creators <- length(xml_find_all(eml_file, './dataset/creator'))
+  num_orcids <- length(xml_find_all(eml_file, './dataset/creator/userId'))
 ```
 
 ### coverages present
@@ -282,6 +274,7 @@ if (length(eml_script) > 0){
 ```
 
 ### entity information
+
 ```{r}
 eml_entities <- xml_find_all(eml_file, './/entityName')
 num_entities <- length(eml_entities)
@@ -301,18 +294,53 @@ if (num_entitydescr > 0){
 }
 num_entity_format <- length(xml_find_all(eml_entity_info, '//physical/dataFormat'))
 
-  entity_ids_text <- xml_attr(xml_parent(eml_entities), 'id')
-  entity_syst_text <- xml_attr(xml_parent(eml_entities), 'system')
-  entity_ids <- length(entity_ids_text[!is.na(entity_ids_text)])
-  entity_syst <- length(entity_syst_text[!is.na(entity_syst_text)])
-  entity_alt_ids <- length(xml_find_all(xml_parent(eml_entity_info), './alternateIdentifier'))
-  entity_ids <- entity_ids + entity_alt_ids
-  num_entity_id <- ifelse(entity_ids > num_entities, num_entities, entity_ids)
-  entity_alt_syst <- length(xml_find_all(xml_parent(eml_entity_info), './alternateIdentifier[@system]'))
-  entity_syst <- entity_syst + entity_alt_syst
-  num_entity_syst <- ifelse(entity_syst > num_entities, num_entities, entity_syst)
+entity_ids_text <- xml_attr(xml_parent(eml_entities), 'id')
+entity_syst_text <- xml_attr(xml_parent(eml_entities), 'system')
+entity_ids <- length(entity_ids_text[!is.na(entity_ids_text)])
+entity_syst <- length(entity_syst_text[!is.na(entity_syst_text)])
+entity_alt_ids <- length(xml_find_all(xml_parent(eml_entity_info), './alternateIdentifier'))
+entity_ids <- entity_ids + entity_alt_ids
+num_entity_id <- ifelse(entity_ids > num_entities, num_entities, entity_ids)
+entity_alt_syst <- length(xml_find_all(xml_parent(eml_entity_info), './alternateIdentifier[@system]'))
+entity_syst <- entity_syst + entity_alt_syst
+num_entity_syst <- ifelse(entity_syst > num_entities, num_entities, entity_syst)
 
 num_otherentity <- length(xml_find_all(eml_file, '//otherEntity'))
+```
+
+### determine file format
+
+```{r}
+eml_entity_filename <- xml_text(xml_find_all(eml_file, './/physical/objectName'))
+entity_extensions <- vector()
+
+if(length(eml_entity_filename) > 0) {
+  for (j in 1:length(eml_entity_filename)) {
+    eml_extension_parts <- str_split(eml_entity_filename[j], '\\.')
+    p <- length(eml_extension_parts[[1]])
+    if(p>1) {
+      entity_extensions[j] <- eml_extension_parts[[1]][p]
+    }
+  }
+}
+
+extensions <- data.frame(entity_extensions)
+standard <- read.csv('https://github.com/NCEAS/metadig-checks/raw/main/data/DataONEformats.csv')
+
+standard <- standard %>%
+  distinct(File.Extension, isProprietary) %>%
+  mutate(entity_extensions = str_trim(File.Extension)) %>%
+  mutate(isProprietary = str_trim(isProprietary)) %>%
+  filter(nchar(File.Extension) > 1)
+
+format <- left_join(extensions, standard, by = "entity_extensions")
+
+open <- format %>%
+  group_by(isProprietary) %>%
+  summarize(count = n())
+
+num_file_proprietary <- ifelse(any(open$isProprietary == 'Y'), open$count[open$isProprietary == 'Y'], 0)
+num_file_open  <- ifelse(any(open$isProprietary == 'N'), open$count[open$isProprietary == 'N'], 0)
 ```
 
 ### table entity specific information
@@ -369,9 +397,9 @@ if (length(eml_tableentities) > 0){
 ```
 
 ```{r}
-test <- c("package ID", "dataset ID resolvable", "number of words in title", "number of words in abstract", "number of keywords", "number of keywords with type", "thesauri identified", "publication date present", "number of creators", "number of creators with ID", "geographic coverage present", "geographic description present", "temporal coverage present", "taxononimc coverage present", "public access granted", "number of dataset contacts", "number of contacts with ID", "number of publishers", "number of publisher with ID", "landing page link", "number of words in methods description", "processing code in software element", "processing code in other entity", "license present", "provenance datasource linked", "number of table entities", "number of other entities", "number of all entities", "number of entity IDs present", "number of entitis downloadable", "number of entities with checksums", "number of entities with descriptions", "number of enity description of sufficient length", "number of entities with format defined", "attribute names unique within each entity", "number of attributes", "number of attribute definitions", "number of attribute definitions of sufficient length", "attribute definition different then attribute name", "attribute storage type defined", "attribute precision defined", "number of data quality descriptions")
+test <- c("package ID", "dataset ID resolvable", "number of words in title", "number of words in abstract", "number of keywords", "number of keywords with type", "thesauri identified", "publication date present", "number of creators", "number of creators with ID", "geographic coverage present", "geographic description present", "temporal coverage present", "taxononimc coverage present", "public access granted", "number of dataset contacts", "number of contacts with ID", "number of publishers", "number of publisher with ID", "landing page link", "number of words in methods description", "processing code in software element", "processing code in other entity", "license present", "provenance datasource linked", "number of table entities", "number of other entities", "number of all entities", "number of entity IDs present", "number of entitis downloadable", "number of entities with checksums", "number of entities with descriptions", "number of enity description of sufficient length", "number of entities with format defined", "number of entities open format", "number of entities proprietary format", "attribute names unique within each entity", "number of attributes", "number of attribute definitions", "number of attribute definitions of sufficient length", "attribute definition different then attribute name", "attribute storage type defined", "attribute precision defined", "number of data quality descriptions")
 
-result <- c(package_id, eml_id_text, title_length, abstract_length, num_keywords, num_keywordtype, num_thesaurus, eml_pubdate, num_creators, num_orcids, eml_geog, eml_geog_descr, eml_time, eml_taxon, public, eml_contact, eml_contact_id, eml_publisher, eml_publisher_id, eml_landing, methods_length, num_software, script, num_license, num_provdatasource, num_tables, num_otherentity, num_entities, num_entity_id, num_entity_url, num_checksum, num_entitydescr, num_enitydescrsufficient, num_entity_format, attr_nameunique, num_attributes, num_attributedefs, num_attrdefsufficient, num_attributedefdifferent, num_attributestoragetype, num_attributeprecision, num_qualitydesc)
+result <- c(eml_id, eml_id_text, title_length, abstract_length, num_keywords, num_keywordtype, num_thesaurus, eml_pubdate, num_creators, num_orcids, eml_geog, eml_geog_descr, eml_time, eml_taxon, public, eml_contact, eml_contact_id, eml_publisher, eml_publisher_id, eml_landing, methods_length, num_software, script, num_license, num_provdatasource, num_tables, num_otherentity, num_entities, num_entity_id, num_entity_url, num_checksum, num_entitydescr, num_enitydescrsufficient, num_entity_format, num_file_open, num_file_proprietary, attr_nameunique, num_attributes, num_attributedefs, num_attrdefsufficient, num_attributedefdifferent, num_attributestoragetype, num_attributeprecision, num_qualitydesc)
 
 evaluation <- data.frame(test, result)
 

@@ -19,5 +19,6 @@ license-present
 provenance-data-source-present
 processing-code-present-and-described
 entity-information
+determine-file-format
 table-entity-specific-information
 attribute-information
