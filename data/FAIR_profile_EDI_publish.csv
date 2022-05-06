@@ -1,8 +1,8 @@
 FAIR,RDA,DataONE,EDI repository implementation,EML schema,EDI check
 F,Metadata is identified by a persistent identifier,metadata identifier present,,required,yes
-F,Data is identified by a persistent identifier,entity identifier present,,,no
+F,Data is identified by a persistent identifier,entity identifier present,yes,,
 F,Metadata is identified by a globally unique identifier,metadata identifier present,,required,yes
-F,Data is identified by a globally unique identifier,entity identifier present,,,no
+F,Data is identified by a globally unique identifier,entity identifier present,yes,,
 F,,entity identifierType present,,,no
 F,Rich metadata is provided to allow discovery,resource titleLength sufficient,,,yes
 F,,resource publicationDate present,,,yes
@@ -18,20 +18,20 @@ F,,resource spatialExtent present,,,yes
 F,,geographic description present,,required with spatialExtent,yes
 F,,resource taxonomicExtent present,,,yes
 F,,resource temporalExtent present,,,yes
-F,Metadata includes the identifier for the data,entity identifier present,,,no
+F,Metadata includes the identifier for the data,entity identifier present,yes,,
 F,Metadata is offered in such a way that it can be harvested and indexed,,"D1 member node, PASTA+ API, schema.org",,
 ,,,,,
 A,Metadata contains information to enable the user to get access to the data,entity distributionURL resolvable,,,yes
-A,,resource accessControlRules present,,,no
+A,,resource accessControlRules present,yes,,
 A,,resource distributionContact present,,required,yes
 A,,resource distributionContactIdentifier present,,,no
 A,,resource publisher present,is EDI,,
 A,,resource publisherIdentifier present,EDI's ROR,,
-A,,resource serviceLocation present,,not in EML,PASTA+ API
-A,,resource serviceProvider present,,not in EML,PASTA+ API
-A,Metadata can be accessed manually (i.e. with human intervention),resource landingPage present,EDI provided,,
+A,,resource serviceLocation present,PASTA+ API,not in EML,
+A,,resource serviceProvider present,PASTA+ API,not in EML,
+A,Metadata can be accessed manually (i.e. with human intervention),resource landingPage present,yes,,
 A,Data can be accessed manually (i.e. with human intervention),entity distributionURL resolvable,,,yes
-A,Metadata identifier resolves to a metadata record,metadata identifier resolvable,,,no
+A,Metadata identifier resolves to a metadata record,metadata identifier resolvable,yes,,
 A,Data identifier resolves to a digital object,,,,
 A,Metadata is accessed through standardised protocol,,yes,,
 A,Data is accessible through standardised protocol,,yes,,
@@ -70,7 +70,7 @@ R,,entity attributeMeasurementScale present,,required,yes
 R,,entity attributePrecision present,,,
 R,,entity description present,,required,yes
 R,,entity qualityDescription present,,,
-R,Metadata includes information about the licence under which the data can be reused,resource license present,,,
+R,Metadata includes information about the licence under which the data can be reused,resource license present,yes,,
 R,Metadata refers to a standard reuse licence,,,,
 R,Metadata refers to a machine-understandable reuse licence,,,,
 R,Metadata includes provenance information according to community-specific standards,provenance processStepCode present,,,
